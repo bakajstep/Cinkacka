@@ -1,0 +1,18 @@
+{
+    "name": "Herní Automat",
+    "short_name": "Automat",
+    "description": "Jednoduchý herní automat se sázkami, dostupný jako progresivní webová aplikace.",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#f9f9f9",
+    "theme_color": "#333",
+    "icons": [
+      {
+        "src": "ikona.jpg",
+        "sizes": "626x626",
+        "type": "image/jpg"
+      }
+    ]
+  }
+  
