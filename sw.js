@@ -35,22 +35,33 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch událost: Network First strategie
+// Fetch událost: Network First strategie (pouze GET požadavky)
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    fetch(event.request)
-      .then(networkResponse => {
-        // Pokud je odpověď validní, aktualizuj cache
-        if (networkResponse && networkResponse.status === 200) {
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, networkResponse.clone());
+  if (event.request.method === 'GET') {
+    event.respondWith(
+      fetch(event.request)
+        .then(networkResponse => {
+          // Klonuj odpověď dříve, než ji použijeme
+          const responseClone = networkResponse.clone();
+
+          // Ulož do cache, pokud je odpověď validní
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return networkResponse; // Vrať původní odpověď
+        })
+        .catch(() => {
+          // Pokud síť selže, vrať obsah z cache
+          return caches.match(event.request).then(cachedResponse => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            // Fallback, pokud není v cache
+            return caches.match('./index.html');
           });
-        }
-        return networkResponse;
-      })
-      .catch(() => {
-        // Pokud síť selže, vrať obsah z cache
-        return caches.match(event.request);
-      })
-  );
+        })
+    );
+  }
 });
